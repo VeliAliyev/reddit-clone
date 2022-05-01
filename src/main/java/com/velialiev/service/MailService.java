@@ -33,7 +33,7 @@ public class MailService {
             log.info("Activation mail sent");
         }
         catch (MailException e){
-            throw new SpringRedditException("Exception occurred when sending mail to" + notificationEmail.getRecipient());
+            throw new SpringRedditException("Exception occurred when sending mail to " + notificationEmail.getRecipient());
         }
     }
 }

@@ -18,7 +18,7 @@ public class VerificationToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long verificationId;
 
-    private String verificationToken;
+    private String token;
 
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
