@@ -1,5 +1,7 @@
 package com.velialiev.service;
 
+import com.velialiev.dto.AuthenticationResponse;
+import com.velialiev.dto.LoginRequest;
 import com.velialiev.dto.RegisterRequest;
 import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.model.NotificationEmail;
@@ -7,9 +9,14 @@ import com.velialiev.model.User;
 import com.velialiev.model.VerificationToken;
 import com.velialiev.repository.UserRepository;
 import com.velialiev.repository.VerificationTokenRepository;
+import com.velialiev.security.JwtProvider;
 import lombok.AllArgsConstructor;
 
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +32,8 @@ public class AuthService {
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
 
     @Transactional
     public void signup(RegisterRequest registerRequest){
@@ -72,4 +81,13 @@ public class AuthService {
         user.setEnabled(true);
         userRepository.save(user);
     }
+
+    public AuthenticationResponse login(LoginRequest loginRequest){
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        // You can look up this context for authentication object to check if the user is logged in or not.
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtProvider.generateToken(authentication);
+        return new AuthenticationResponse(token, loginRequest.getUsername());
+    }
+
 }

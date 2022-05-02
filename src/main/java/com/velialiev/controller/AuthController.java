@@ -1,5 +1,7 @@
 package com.velialiev.controller;
 
+import com.velialiev.dto.AuthenticationResponse;
+import com.velialiev.dto.LoginRequest;
 import com.velialiev.dto.RegisterRequest;
 
 
@@ -28,5 +30,10 @@ public class AuthController {
     public ResponseEntity<String> verifyAccount(@PathVariable(name = "token") String token){
         authService.verifyAccount(token);
         return new ResponseEntity<>("Account activated successfully", HttpStatus.OK);
+    }
+
+    @PostMapping("login")
+    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest){
+        return authService.login(loginRequest);
     }
 }
