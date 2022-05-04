@@ -1,6 +1,6 @@
 package com.velialiev.service;
 
-import com.velialiev.model.User;
+import com.velialiev.model.UserEntity;
 import com.velialiev.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,10 +25,10 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-       User user = userRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("No user with such username"));
+       UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("No user with such username"));
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
-                user.isEnabled(), true, true, true, getAuthorities("USER"));
+        return new org.springframework.security.core.userdetails.User(userEntity.getUsername(), userEntity.getPassword(),
+                userEntity.isEnabled(), true, true, true, getAuthorities("USER"));
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(String role){
