@@ -5,7 +5,7 @@ import com.velialiev.dto.LoginRequest;
 import com.velialiev.dto.RegisterRequest;
 import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.model.NotificationEmail;
-import com.velialiev.model.User;
+import com.velialiev.model.UserEntity;
 import com.velialiev.model.VerificationToken;
 import com.velialiev.repository.UserRepository;
 import com.velialiev.repository.VerificationTokenRepository;
@@ -17,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,29 +38,38 @@ public class AuthService {
 
     @Transactional
     public void signup(RegisterRequest registerRequest){
-        User user = new User();
-        user.setUsername(registerRequest.getUsername());
-        user.setEmail(registerRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        user.setCreatedDate(Instant.now());
-        user.setEnabled(false);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(registerRequest.getUsername());
+        userEntity.setEmail(registerRequest.getEmail());
+        userEntity.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        userEntity.setCreatedDate(Instant.now());
+        userEntity.setEnabled(false);
 
-        userRepository.save(user);
+        userRepository.save(userEntity);
 
-        String token = generateVerificationToken(user);
+        String token = generateVerificationToken(userEntity);
         mailService.sendMail(new NotificationEmail("Please activate your account",
-                        user.getEmail(), "Thank you for signing up to Reddit Clone, " +
+                        userEntity.getEmail(), "Thank you for signing up to Reddit Clone, " +
                 "please click on the below url to activate your account : " +
                 "http://localhost:8080/api/auth/accountVerification/" + token));
 
     }
 
-    private String generateVerificationToken(User user){
+    public UserEntity getCurrentUser(){
+         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+         UserEntity userEntity = userRepository.findByUsername(user.getUsername())
+                 .orElseThrow(()->new SpringRedditException("No user with such username"));
+         return userEntity;
+    }
+
+
+
+    private String generateVerificationToken(UserEntity userEntity){
         String token = UUID.randomUUID().toString();
 
         VerificationToken verificationToken = new VerificationToken();
         verificationToken.setToken(token);
-        verificationToken.setUser(user);
+        verificationToken.setUserEntity(userEntity);
 
         verificationTokenRepository.save(verificationToken);
         return token;
@@ -75,11 +85,11 @@ public class AuthService {
 
     @Transactional
     public void fetchUserAndEnable(VerificationToken verificationToken){
-        User user = userRepository.findByUsername(verificationToken.getUser().getUsername())
-                .orElseThrow(()-> new SpringRedditException("User "+ verificationToken.getUser().getUsername() + " not found"));
+        UserEntity userEntity = userRepository.findByUsername(verificationToken.getUserEntity().getUsername())
+                .orElseThrow(()-> new SpringRedditException("User "+ verificationToken.getUserEntity().getUsername() + " not found"));
 
-        user.setEnabled(true);
-        userRepository.save(user);
+        userEntity.setEnabled(true);
+        userRepository.save(userEntity);
     }
 
     public AuthenticationResponse login(LoginRequest loginRequest){
