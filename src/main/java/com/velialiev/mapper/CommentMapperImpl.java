@@ -1,8 +1,11 @@
 package com.velialiev.mapper;
 
 import com.velialiev.dto.CommentDto;
+import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.model.CommentEntity;
+import com.velialiev.model.Post;
 import com.velialiev.model.UserEntity;
+import com.velialiev.repository.PostRepository;
 import com.velialiev.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,16 +17,18 @@ import java.time.Instant;
 public class CommentMapperImpl implements CommentMapper{
 
     private final AuthService authService;
+    private final PostRepository postRepository;
 
     @Override
     public CommentEntity mapDtoToComment(CommentDto commentDto) {
 
         UserEntity userEntity = authService.getCurrentUser();
+        Post post = postRepository.findById(commentDto.getPostID()).orElseThrow(()->new SpringRedditException("No post for this comment"));
 
         return CommentEntity.builder()
                 .commentId(commentDto.getCommentId())
                 .text(commentDto.getText())
-                .post(commentDto.getPost())
+                .post(post)
                 .createdDate(Instant.now())
                 .userEntity(userEntity)
                 .build();
@@ -34,7 +39,7 @@ public class CommentMapperImpl implements CommentMapper{
         return CommentDto.builder()
                 .commentId(commentEntity.getCommentId())
                 .text(commentEntity.getText())
-                .post(commentEntity.getPost())
+                .postID(commentEntity.getPost().getPostId())
                 .build();
     }
 }
