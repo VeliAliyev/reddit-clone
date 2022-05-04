@@ -34,4 +34,10 @@ public class PostController {
         List<PostResponseDto> postResponseDtos = postService.getAllPosts();
         return new ResponseEntity<>(postResponseDtos, HttpStatus.OK);
     }
+
+    @GetMapping("by-subreddit/{id}")
+    public ResponseEntity<List<PostResponseDto>> getAllPostsBySubreddit(@PathVariable(name = "id") Long id){
+        List<PostResponseDto> postResponseDtos = postService.getAllPostsBySubreddit(id);
+        return new ResponseEntity<>(postResponseDtos, HttpStatus.OK);
+    }
 }

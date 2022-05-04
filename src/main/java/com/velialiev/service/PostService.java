@@ -5,7 +5,9 @@ import com.velialiev.dto.PostResponseDto;
 import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.mapper.PostMapper;
 import com.velialiev.model.Post;
+import com.velialiev.model.Subreddit;
 import com.velialiev.repository.PostRepository;
+import com.velialiev.repository.SubredditRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ public class PostService {
 
     final private PostRepository postRepository;
     final private PostMapper postMapper;
+    final private SubredditRepository subredditRepository;
 
     public void createPost(PostRequestDto postRequestDto) {
         Post post = postMapper.mapDtoToPost(postRequestDto);
@@ -33,5 +36,14 @@ public class PostService {
         List<Post> posts = postRepository.findAll();
         List<PostResponseDto> postResponseDtos = posts.stream().map(postMapper::mapPostToDto).collect(Collectors.toList());
         return postResponseDtos;
+    }
+
+
+    public List<PostResponseDto> getAllPostsBySubreddit(Long id) {
+        Subreddit subreddit = subredditRepository.findById(id)
+                .orElseThrow(()->new SpringRedditException("No such subreddit"));
+        List<Post> posts = postRepository.findAllBySubreddit(subreddit)
+                .orElseThrow(()->new SpringRedditException("No posts in this subreddit"));
+        return posts.stream().map(postMapper::mapPostToDto).collect(Collectors.toList());
     }
 }
