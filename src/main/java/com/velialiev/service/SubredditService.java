@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class SubredditService {
 
     private final SubredditRepository subredditRepository;

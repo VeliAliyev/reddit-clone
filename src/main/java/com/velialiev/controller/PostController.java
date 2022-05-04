@@ -23,7 +23,7 @@ public class PostController {
         return  new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @GetMapping("id")
+    @GetMapping("{id}")
     public ResponseEntity<PostResponseDto> getPost(@PathVariable(name = "id") Long id){
         PostResponseDto postResponseDto = postService.getPost(id);
         return new ResponseEntity(postResponseDto, HttpStatus.OK);
