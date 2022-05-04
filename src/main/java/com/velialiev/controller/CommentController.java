@@ -5,10 +5,9 @@ import com.velialiev.service.CommentService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/comments/")
@@ -20,5 +19,11 @@ public class CommentController {
     public ResponseEntity createComment(@RequestBody CommentDto commentDto){
         commentService.createComment(commentDto);
         return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    @GetMapping("by-postId/{id}")
+    public ResponseEntity<List<CommentDto>> getAllCommentsByPost(@PathVariable(name = "id") Long id){
+        List<CommentDto> commentDtos = commentService.getAllCommentsByPost(id);
+        return new ResponseEntity<>(commentDtos, HttpStatus.OK);
     }
 }
