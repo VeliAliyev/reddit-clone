@@ -33,9 +33,17 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "userId")
-    private User user;
+    private UserEntity userEntity;
 
     private Instant createdDate;
+
+    private Integer commentCount;
+
+    private String duration;
+
+    private boolean upVote = false;
+
+    private boolean downVote = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subredditId", referencedColumnName = "subredditId")
