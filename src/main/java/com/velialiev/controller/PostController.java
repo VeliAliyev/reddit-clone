@@ -40,4 +40,10 @@ public class PostController {
         List<PostResponseDto> postResponseDtos = postService.getAllPostsBySubreddit(id);
         return new ResponseEntity<>(postResponseDtos, HttpStatus.OK);
     }
+
+    @GetMapping("by-user/{username}")
+    public ResponseEntity<List<PostResponseDto>> getAllPostsByUsername(@PathVariable(name = "username") String username){
+        List<PostResponseDto> postResponseDtos = postService.getAllPostsByUsername(username);
+        return new ResponseEntity<>(postResponseDtos, HttpStatus.OK);
+    }
 }
