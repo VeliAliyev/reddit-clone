@@ -12,7 +12,7 @@ import java.time.Instant;
 @Table(name = "token")
 @AllArgsConstructor
 @NoArgsConstructor
-public class VerificationToken {
+public class VerificationTokenEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

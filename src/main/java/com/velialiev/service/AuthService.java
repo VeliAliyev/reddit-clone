@@ -6,7 +6,7 @@ import com.velialiev.dto.RegisterRequest;
 import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.model.NotificationEmail;
 import com.velialiev.model.UserEntity;
-import com.velialiev.model.VerificationToken;
+import com.velialiev.model.VerificationTokenEntity;
 import com.velialiev.repository.UserRepository;
 import com.velialiev.repository.VerificationTokenRepository;
 import com.velialiev.security.JwtProvider;
@@ -67,26 +67,26 @@ public class AuthService {
     private String generateVerificationToken(UserEntity userEntity){
         String token = UUID.randomUUID().toString();
 
-        VerificationToken verificationToken = new VerificationToken();
-        verificationToken.setToken(token);
-        verificationToken.setUserEntity(userEntity);
+        VerificationTokenEntity verificationTokenEntity = new VerificationTokenEntity();
+        verificationTokenEntity.setToken(token);
+        verificationTokenEntity.setUserEntity(userEntity);
 
-        verificationTokenRepository.save(verificationToken);
+        verificationTokenRepository.save(verificationTokenEntity);
         return token;
     }
 
     public void verifyAccount(String token) {
 
-        VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
+        VerificationTokenEntity verificationTokenEntity = verificationTokenRepository.findByToken(token)
                 .orElseThrow(()-> new SpringRedditException("Invalid Token"));
 
-        fetchUserAndEnable(verificationToken);
+        fetchUserAndEnable(verificationTokenEntity);
     }
 
     @Transactional
-    public void fetchUserAndEnable(VerificationToken verificationToken){
-        UserEntity userEntity = userRepository.findByUsername(verificationToken.getUserEntity().getUsername())
-                .orElseThrow(()-> new SpringRedditException("User "+ verificationToken.getUserEntity().getUsername() + " not found"));
+    public void fetchUserAndEnable(VerificationTokenEntity verificationTokenEntity){
+        UserEntity userEntity = userRepository.findByUsername(verificationTokenEntity.getUserEntity().getUsername())
+                .orElseThrow(()-> new SpringRedditException("User "+ verificationTokenEntity.getUserEntity().getUsername() + " not found"));
 
         userEntity.setEnabled(true);
         userRepository.save(userEntity);

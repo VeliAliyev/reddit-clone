@@ -47,5 +47,5 @@ public class PostEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subredditId", referencedColumnName = "subredditId")
-    private Subreddit subreddit;
+    private SubredditEntity subredditEntity;
 }

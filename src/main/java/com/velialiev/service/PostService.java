@@ -5,7 +5,7 @@ import com.velialiev.dto.PostResponseDto;
 import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.mapper.PostMapper;
 import com.velialiev.model.PostEntity;
-import com.velialiev.model.Subreddit;
+import com.velialiev.model.SubredditEntity;
 import com.velialiev.model.UserEntity;
 import com.velialiev.repository.PostRepository;
 import com.velialiev.repository.SubredditRepository;
@@ -47,9 +47,9 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostResponseDto> getAllPostsBySubreddit(Long id) {
-        Subreddit subreddit = subredditRepository.findById(id)
+        SubredditEntity subredditEntity = subredditRepository.findById(id)
                 .orElseThrow(()->new SpringRedditException("No such subreddit"));
-        List<PostEntity> postEntities = postRepository.findAllBySubreddit(subreddit)
+        List<PostEntity> postEntities = postRepository.findAllBySubreddit(subredditEntity)
                 .orElseThrow(()->new SpringRedditException("No posts in this subreddit"));
         return postEntities.stream().map(postMapper::mapPostToDto).collect(Collectors.toList());
     }

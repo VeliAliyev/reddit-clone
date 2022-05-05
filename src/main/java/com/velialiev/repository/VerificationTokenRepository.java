@@ -1,13 +1,13 @@
 package com.velialiev.repository;
 
-import com.velialiev.model.VerificationToken;
+import com.velialiev.model.VerificationTokenEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface VerificationTokenRepository extends JpaRepository<VerificationToken, Long> {
+public interface VerificationTokenRepository extends JpaRepository<VerificationTokenEntity, Long> {
 
-    public Optional<VerificationToken> findByToken(String token);
+    public Optional<VerificationTokenEntity> findByToken(String token);
 }

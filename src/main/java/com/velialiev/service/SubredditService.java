@@ -4,7 +4,7 @@ package com.velialiev.service;
 import com.velialiev.dto.SubredditDto;
 import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.mapper.SubredditMapper;
-import com.velialiev.model.Subreddit;
+import com.velialiev.model.SubredditEntity;
 import com.velialiev.repository.SubredditRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class SubredditService {
     private final SubredditMapper subredditMapper;
     @Transactional
     public SubredditDto save(SubredditDto subredditDto){
-        Subreddit save = subredditRepository.save(subredditMapper.mapDtoToSubreddit(subredditDto));
+        SubredditEntity save = subredditRepository.save(subredditMapper.mapDtoToSubreddit(subredditDto));
         subredditDto.setId(save.getSubredditId());
         return subredditDto ;
     }

@@ -4,7 +4,7 @@ import com.velialiev.dto.PostRequestDto;
 import com.velialiev.dto.PostResponseDto;
 import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.model.PostEntity;
-import com.velialiev.model.Subreddit;
+import com.velialiev.model.SubredditEntity;
 import com.velialiev.model.UserEntity;
 import com.velialiev.repository.SubredditRepository;
 import com.velialiev.service.AuthService;
@@ -25,7 +25,7 @@ public class PostMapperImpl implements PostMapper{
     @Override
     public PostEntity mapDtoToPost(PostRequestDto postRequestDto) {
 
-        Subreddit subreddit = subredditRepository.findBySubredditName(postRequestDto.getSubredditName())
+        SubredditEntity subredditEntity = subredditRepository.findBySubredditName(postRequestDto.getSubredditName())
                 .orElseThrow(()->new SpringRedditException("No subreddit with such name"));
 
         UserEntity userEntity = authService.getCurrentUser();
@@ -39,7 +39,7 @@ public class PostMapperImpl implements PostMapper{
                 .commentCount(0)
                 .userEntity(userEntity)
                 .createdDate(Instant.now())
-                .subreddit(subreddit)
+                .subredditEntity(subredditEntity)
                 .upVote(true)
                 .downVote(false)
                 .build();
@@ -50,7 +50,7 @@ public class PostMapperImpl implements PostMapper{
 
         return PostResponseDto.builder()
                 .postId(postEntity.getPostId())
-                .subredditName(postEntity.getSubreddit().getSubredditName())
+                .subredditName(postEntity.getSubredditEntity().getSubredditName())
                 .postName(postEntity.getPostName())
                 .url(postEntity.getUrl())
                 .description(postEntity.getDescription())

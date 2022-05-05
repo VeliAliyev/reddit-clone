@@ -1,12 +1,12 @@
 package com.velialiev.mapper;
 
 import com.velialiev.dto.SubredditDto;
-import com.velialiev.model.Subreddit;
+import com.velialiev.model.SubredditEntity;
 
 public interface SubredditMapper {
 
-    public SubredditDto mapSubredditToDto(Subreddit subreddit);
-    public Subreddit mapDtoToSubreddit(SubredditDto subredditDto);
+    public SubredditDto mapSubredditToDto(SubredditEntity subredditEntity);
+    public SubredditEntity mapDtoToSubreddit(SubredditDto subredditDto);
 
 
 }
