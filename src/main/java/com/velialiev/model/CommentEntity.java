@@ -26,7 +26,7 @@ public class CommentEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postId", referencedColumnName = "postId")
-    private Post post;
+    private PostEntity postEntity;
 
     private Instant createdDate;
 

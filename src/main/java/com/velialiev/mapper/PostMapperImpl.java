@@ -3,7 +3,7 @@ package com.velialiev.mapper;
 import com.velialiev.dto.PostRequestDto;
 import com.velialiev.dto.PostResponseDto;
 import com.velialiev.exceptions.SpringRedditException;
-import com.velialiev.model.Post;
+import com.velialiev.model.PostEntity;
 import com.velialiev.model.Subreddit;
 import com.velialiev.model.UserEntity;
 import com.velialiev.repository.SubredditRepository;
@@ -23,14 +23,14 @@ public class PostMapperImpl implements PostMapper{
     private final AuthService authService;
 
     @Override
-    public Post mapDtoToPost(PostRequestDto postRequestDto) {
+    public PostEntity mapDtoToPost(PostRequestDto postRequestDto) {
 
         Subreddit subreddit = subredditRepository.findBySubredditName(postRequestDto.getSubredditName())
                 .orElseThrow(()->new SpringRedditException("No subreddit with such name"));
 
         UserEntity userEntity = authService.getCurrentUser();
 
-        return Post.builder()
+        return PostEntity.builder()
                 .postId(postRequestDto.getPostId())
                 .postName(postRequestDto.getPostName())
                 .url(postRequestDto.getUrl())
@@ -46,20 +46,20 @@ public class PostMapperImpl implements PostMapper{
     }
 
     @Override
-    public PostResponseDto mapPostToDto(Post post) {
+    public PostResponseDto mapPostToDto(PostEntity postEntity) {
 
         return PostResponseDto.builder()
-                .postId(post.getPostId())
-                .subredditName(post.getSubreddit().getSubredditName())
-                .postName(post.getPostName())
-                .url(post.getUrl())
-                .description(post.getDescription())
-                .username(post.getUserEntity().getUsername())
-                .voteCount(post.getVoteCount())
-                .commentCount(post.getCommentCount())
-                .duration(Duration.between(Instant.now(), post.getCreatedDate()).toString())
-                .upVote(post.isUpVote())
-                .downVote(post.isDownVote())
+                .postId(postEntity.getPostId())
+                .subredditName(postEntity.getSubreddit().getSubredditName())
+                .postName(postEntity.getPostName())
+                .url(postEntity.getUrl())
+                .description(postEntity.getDescription())
+                .username(postEntity.getUserEntity().getUsername())
+                .voteCount(postEntity.getVoteCount())
+                .commentCount(postEntity.getCommentCount())
+                .duration(Duration.between(Instant.now(), postEntity.getCreatedDate()).toString())
+                .upVote(postEntity.isUpVote())
+                .downVote(postEntity.isDownVote())
                 .build();
     }
 }

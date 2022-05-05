@@ -3,7 +3,7 @@ package com.velialiev.mapper;
 import com.velialiev.dto.CommentDto;
 import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.model.CommentEntity;
-import com.velialiev.model.Post;
+import com.velialiev.model.PostEntity;
 import com.velialiev.model.UserEntity;
 import com.velialiev.repository.PostRepository;
 import com.velialiev.service.AuthService;
@@ -23,12 +23,12 @@ public class CommentMapperImpl implements CommentMapper{
     public CommentEntity mapDtoToComment(CommentDto commentDto) {
 
         UserEntity userEntity = authService.getCurrentUser();
-        Post post = postRepository.findById(commentDto.getPostID()).orElseThrow(()->new SpringRedditException("No post for this comment"));
+        PostEntity postEntity = postRepository.findById(commentDto.getPostID()).orElseThrow(()->new SpringRedditException("No post for this comment"));
 
         return CommentEntity.builder()
                 .commentId(commentDto.getCommentId())
                 .text(commentDto.getText())
-                .post(post)
+                .postEntity(postEntity)
                 .createdDate(Instant.now())
                 .userEntity(userEntity)
                 .build();
@@ -39,7 +39,7 @@ public class CommentMapperImpl implements CommentMapper{
         return CommentDto.builder()
                 .commentId(commentEntity.getCommentId())
                 .text(commentEntity.getText())
-                .postID(commentEntity.getPost().getPostId())
+                .postID(commentEntity.getPostEntity().getPostId())
                 .build();
     }
 }

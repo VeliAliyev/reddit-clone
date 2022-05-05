@@ -1,6 +1,6 @@
 package com.velialiev.repository;
 
-import com.velialiev.model.Post;
+import com.velialiev.model.PostEntity;
 import com.velialiev.model.Subreddit;
 import com.velialiev.model.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PostRepository extends JpaRepository<Post, Long> {
-    Optional<List<Post>> findAllBySubreddit(Subreddit subreddit);
-    Optional<List<Post>> findAllByUserEntity(UserEntity userEntity);
+public interface PostRepository extends JpaRepository<PostEntity, Long> {
+    Optional<List<PostEntity>> findAllBySubreddit(Subreddit subreddit);
+    Optional<List<PostEntity>> findAllByUserEntity(UserEntity userEntity);
 }

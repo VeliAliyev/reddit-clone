@@ -30,7 +30,7 @@ public class Subreddit {
     private String subredditDescription;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<Post> posts;
+    private List<PostEntity> postEntities;
 
     private Instant createdDate;
 

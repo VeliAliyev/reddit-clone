@@ -15,7 +15,7 @@ public class SubredditMapperImpl implements SubredditMapper{
                 .id(subreddit.getSubredditId())
                 .name(subreddit.getSubredditName())
                 .description(subreddit.getSubredditDescription())
-                .numberOfPosts(subreddit.getPosts().size())
+                .numberOfPosts(subreddit.getPostEntities().size())
                 .build();
     }
 

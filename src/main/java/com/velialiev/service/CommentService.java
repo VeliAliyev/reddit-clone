@@ -4,7 +4,7 @@ import com.velialiev.dto.CommentDto;
 import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.mapper.CommentMapper;
 import com.velialiev.model.CommentEntity;
-import com.velialiev.model.Post;
+import com.velialiev.model.PostEntity;
 import com.velialiev.model.UserEntity;
 import com.velialiev.repository.CommentRepository;
 import com.velialiev.repository.PostRepository;
@@ -30,9 +30,9 @@ public class CommentService {
     }
 
     public List<CommentDto> getAllCommentsByPost(Long id) {
-        Post post = postRepository.findById(id)
+        PostEntity postEntity = postRepository.findById(id)
                 .orElseThrow(()->new SpringRedditException("No such post"));
-        List<CommentEntity> commentEntities = commentRepository.findAllByPost(post)
+        List<CommentEntity> commentEntities = commentRepository.findAllByPost(postEntity)
                 .orElseThrow(()->new SpringRedditException("No comments for this post"));
         return commentEntities.stream().map(commentMapper::mapCommentToDto).collect(Collectors.toList());
     }

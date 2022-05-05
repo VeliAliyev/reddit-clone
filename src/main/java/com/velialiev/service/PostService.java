@@ -4,7 +4,7 @@ import com.velialiev.dto.PostRequestDto;
 import com.velialiev.dto.PostResponseDto;
 import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.mapper.PostMapper;
-import com.velialiev.model.Post;
+import com.velialiev.model.PostEntity;
 import com.velialiev.model.Subreddit;
 import com.velialiev.model.UserEntity;
 import com.velialiev.repository.PostRepository;
@@ -30,18 +30,18 @@ public class PostService {
 
     @Transactional
     public void createPost(PostRequestDto postRequestDto) {
-        Post post = postMapper.mapDtoToPost(postRequestDto);
-        postRepository.save(post);
+        PostEntity postEntity = postMapper.mapDtoToPost(postRequestDto);
+        postRepository.save(postEntity);
     }
     @Transactional(readOnly = true)
     public PostResponseDto getPost(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(()->new SpringRedditException("No post with such id"));
-        return postMapper.mapPostToDto(post);
+        PostEntity postEntity = postRepository.findById(id).orElseThrow(()->new SpringRedditException("No post with such id"));
+        return postMapper.mapPostToDto(postEntity);
     }
     @Transactional(readOnly = true)
     public List<PostResponseDto> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
-        List<PostResponseDto> postResponseDtos = posts.stream().map(postMapper::mapPostToDto).collect(Collectors.toList());
+        List<PostEntity> postEntities = postRepository.findAll();
+        List<PostResponseDto> postResponseDtos = postEntities.stream().map(postMapper::mapPostToDto).collect(Collectors.toList());
         return postResponseDtos;
     }
 
@@ -49,16 +49,16 @@ public class PostService {
     public List<PostResponseDto> getAllPostsBySubreddit(Long id) {
         Subreddit subreddit = subredditRepository.findById(id)
                 .orElseThrow(()->new SpringRedditException("No such subreddit"));
-        List<Post> posts = postRepository.findAllBySubreddit(subreddit)
+        List<PostEntity> postEntities = postRepository.findAllBySubreddit(subreddit)
                 .orElseThrow(()->new SpringRedditException("No posts in this subreddit"));
-        return posts.stream().map(postMapper::mapPostToDto).collect(Collectors.toList());
+        return postEntities.stream().map(postMapper::mapPostToDto).collect(Collectors.toList());
     }
     @Transactional(readOnly = true)
     public List<PostResponseDto> getAllPostsByUsername(String username) {
         UserEntity userEntity = userRepository.findByUsername(username)
                 .orElseThrow(()->new SpringRedditException("No user with such username"));
-        List<Post> posts = postRepository.findAllByUserEntity(userEntity)
+        List<PostEntity> postEntities = postRepository.findAllByUserEntity(userEntity)
                 .orElseThrow(()->new SpringRedditException("No posts related to this user"));
-        return posts.stream().map(postMapper::mapPostToDto).collect(Collectors.toList());
+        return postEntities.stream().map(postMapper::mapPostToDto).collect(Collectors.toList());
     }
 }
