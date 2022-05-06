@@ -41,10 +41,6 @@ public class PostEntity {
 
     private String duration;
 
-    private boolean upVote = false;
-
-    private boolean downVote = false;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subredditId", referencedColumnName = "subredditId")
     private SubredditEntity subredditEntity;

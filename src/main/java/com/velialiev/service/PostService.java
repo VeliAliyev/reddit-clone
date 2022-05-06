@@ -4,12 +4,11 @@ import com.velialiev.dto.PostRequestDto;
 import com.velialiev.dto.PostResponseDto;
 import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.mapper.PostMapper;
-import com.velialiev.model.PostEntity;
-import com.velialiev.model.SubredditEntity;
-import com.velialiev.model.UserEntity;
+import com.velialiev.model.*;
 import com.velialiev.repository.PostRepository;
 import com.velialiev.repository.SubredditRepository;
 import com.velialiev.repository.UserRepository;
+import com.velialiev.repository.VoteRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,11 +26,19 @@ public class PostService {
     final private PostMapper postMapper;
     final private SubredditRepository subredditRepository;
     final private UserRepository userRepository;
+    final private VoteRepository voteRepository;
+    final private AuthService authService;
 
     @Transactional
     public void createPost(PostRequestDto postRequestDto) {
         PostEntity postEntity = postMapper.mapDtoToPost(postRequestDto);
         postRepository.save(postEntity);
+        voteRepository.save(VoteEntity.builder()
+                        .voteType(VoteType.UPVOTE)
+                        .postEntity(postEntity)
+                        .userEntity(authService.getCurrentUser())
+                .build());
+
     }
     @Transactional(readOnly = true)
     public PostResponseDto getPost(Long id) {

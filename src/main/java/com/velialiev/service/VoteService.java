@@ -26,29 +26,42 @@ public class VoteService {
         PostEntity postEntity = postRepository.findById(voteDto.getPostId()).orElseThrow();
         Optional<VoteEntity> optional = voteRepository.findByUserEntityAndPostEntity(userEntity, postEntity);
 
-        if(!optional.isPresent())
-            voteEntity = createVote(userEntity, postEntity);
-        else
-            voteEntity = optional.get();
-
-        if (voteEntity.getVoteType().equals(voteDto.getVoteType()) && !voteDto.getVoteType().equals(VoteType.NOVOTE)) {
-
-            if(voteDto.getVoteType().equals(VoteType.UPVOTE))
-                postEntity.setVoteCount(postEntity.getVoteCount() - 1);
+        if(!voteDto.getVoteType().equals(VoteType.NOVOTE)){
+            if(!optional.isPresent())
+                voteEntity = createVote(userEntity, postEntity);
             else
-                postEntity.setVoteCount(postEntity.getVoteCount() + 1);
-            voteDto.setVoteType(VoteType.NOVOTE);
+                voteEntity = optional.get();
 
+            if (voteEntity.getVoteType().equals(voteDto.getVoteType())) {
+
+                if(voteDto.getVoteType().equals(VoteType.UPVOTE))
+                    postEntity.setVoteCount(postEntity.getVoteCount() - 1);
+                else
+                    postEntity.setVoteCount(postEntity.getVoteCount() + 1);
+                voteDto.setVoteType(VoteType.NOVOTE);
+
+            }
+            else if (voteDto.getVoteType().equals(VoteType.UPVOTE)){
+
+                if(voteEntity.getVoteType().equals(VoteType.DOWNVOTE))
+                    postEntity.setVoteCount(postEntity.getVoteCount() + 2);
+                else
+                    postEntity.setVoteCount(postEntity.getVoteCount() + 1);
+            }
+
+            else if (voteDto.getVoteType().equals(VoteType.DOWNVOTE)){
+
+                if(voteEntity.getVoteType().equals(VoteType.UPVOTE))
+                    postEntity.setVoteCount(postEntity.getVoteCount() - 2);
+                else
+                    postEntity.setVoteCount(postEntity.getVoteCount() - 1);
+            }
+
+
+            voteEntity.setVoteType(voteDto.getVoteType());
+            postRepository.save(postEntity);
+            voteRepository.save(voteEntity);
         }
-        else if (voteDto.getVoteType().equals(VoteType.UPVOTE))
-            postEntity.setVoteCount(postEntity.getVoteCount() + 1);
-
-        else if (voteDto.getVoteType().equals(VoteType.DOWNVOTE))
-            postEntity.setVoteCount(postEntity.getVoteCount() - 1);
-
-        voteEntity.setVoteType(voteDto.getVoteType());
-        postRepository.save(postEntity);
-        voteRepository.save(voteEntity);
     }
 
     public VoteEntity createVote(UserEntity userEntity, PostEntity postEntity){

@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 
-import java.time.Duration;
 import java.time.Instant;
 
 @Service
@@ -41,8 +40,6 @@ public class PostMapperImpl implements PostMapper{
                 .userEntity(userEntity)
                 .createdDate(Instant.now())
                 .subredditEntity(subredditEntity)
-                .upVote(true)
-                .downVote(false)
                 .build();
     }
 
@@ -58,9 +55,7 @@ public class PostMapperImpl implements PostMapper{
                 .username(postEntity.getUserEntity().getUsername())
                 .voteCount(postEntity.getVoteCount())
                 .commentCount(postEntity.getCommentCount())
-                //.duration(TimeAgo.using(postEntity.getCreatedDate().toEpochMilli()))
-                .upVote(postEntity.isUpVote())
-                .downVote(postEntity.isDownVote())
+                .duration(TimeAgo.using(postEntity.getCreatedDate().toEpochMilli()))
                 .build();
     }
 }
