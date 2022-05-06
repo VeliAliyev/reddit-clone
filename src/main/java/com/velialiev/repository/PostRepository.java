@@ -11,6 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<PostEntity, Long> {
-    Optional<List<PostEntity>> findAllBySubreddit(SubredditEntity subredditEntity);
+    Optional<List<PostEntity>> findAllBySubredditEntity(SubredditEntity subredditEntity);
     Optional<List<PostEntity>> findAllByUserEntity(UserEntity userEntity);
 }

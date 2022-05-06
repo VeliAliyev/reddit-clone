@@ -32,7 +32,7 @@ public class CommentService {
     public List<CommentDto> getAllCommentsByPost(Long id) {
         PostEntity postEntity = postRepository.findById(id)
                 .orElseThrow(()->new SpringRedditException("No such post"));
-        List<CommentEntity> commentEntities = commentRepository.findAllByPost(postEntity)
+        List<CommentEntity> commentEntities = commentRepository.findAllByPostEntity(postEntity)
                 .orElseThrow(()->new SpringRedditException("No comments for this post"));
         return commentEntities.stream().map(commentMapper::mapCommentToDto).collect(Collectors.toList());
     }

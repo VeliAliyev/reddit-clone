@@ -49,7 +49,7 @@ public class PostService {
     public List<PostResponseDto> getAllPostsBySubreddit(Long id) {
         SubredditEntity subredditEntity = subredditRepository.findById(id)
                 .orElseThrow(()->new SpringRedditException("No such subreddit"));
-        List<PostEntity> postEntities = postRepository.findAllBySubreddit(subredditEntity)
+        List<PostEntity> postEntities = postRepository.findAllBySubredditEntity(subredditEntity)
                 .orElseThrow(()->new SpringRedditException("No posts in this subreddit"));
         return postEntities.stream().map(postMapper::mapPostToDto).collect(Collectors.toList());
     }
