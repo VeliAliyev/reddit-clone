@@ -1,5 +1,6 @@
 package com.velialiev.mapper;
 
+import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.velialiev.dto.PostRequestDto;
 import com.velialiev.dto.PostResponseDto;
 import com.velialiev.exceptions.SpringRedditException;
@@ -57,7 +58,7 @@ public class PostMapperImpl implements PostMapper{
                 .username(postEntity.getUserEntity().getUsername())
                 .voteCount(postEntity.getVoteCount())
                 .commentCount(postEntity.getCommentCount())
-                .duration(Duration.between(Instant.now(), postEntity.getCreatedDate()).toString())
+                .duration(TimeAgo.using(postEntity.getCreatedDate().toEpochMilli()))
                 .upVote(postEntity.isUpVote())
                 .downVote(postEntity.isDownVote())
                 .build();
