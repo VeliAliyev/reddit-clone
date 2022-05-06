@@ -12,6 +12,5 @@ public class VoteDto {
 
     public VoteType voteType;
     private Long postId;
-    private Long voteId;
 
 }

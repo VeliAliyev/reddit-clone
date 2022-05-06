@@ -27,16 +27,23 @@ public class VoteService {
         Optional<VoteEntity> optional = voteRepository.findByUserEntityAndPostEntity(userEntity, postEntity);
 
         if(!optional.isPresent())
-            voteEntity = createVote(voteDto, userEntity, postEntity);
+            voteEntity = createVote(userEntity, postEntity);
         else
             voteEntity = optional.get();
 
         if (voteEntity.getVoteType().equals(voteDto.getVoteType()) && !voteDto.getVoteType().equals(VoteType.NOVOTE)) {
+
+            if(voteDto.getVoteType().equals(VoteType.UPVOTE))
+                postEntity.setVoteCount(postEntity.getVoteCount() - 1);
+            else
+                postEntity.setVoteCount(postEntity.getVoteCount() + 1);
             voteDto.setVoteType(VoteType.NOVOTE);
-            postEntity.setVoteCount(postEntity.getVoteCount() - 1);
-        } else if (voteDto.getVoteType().equals(VoteType.UPVOTE)) {
+
+        }
+        else if (voteDto.getVoteType().equals(VoteType.UPVOTE))
             postEntity.setVoteCount(postEntity.getVoteCount() + 1);
-        } else
+
+        else if (voteDto.getVoteType().equals(VoteType.DOWNVOTE))
             postEntity.setVoteCount(postEntity.getVoteCount() - 1);
 
         voteEntity.setVoteType(voteDto.getVoteType());
@@ -44,9 +51,8 @@ public class VoteService {
         voteRepository.save(voteEntity);
     }
 
-    public VoteEntity createVote(VoteDto voteDto, UserEntity userEntity, PostEntity postEntity){
+    public VoteEntity createVote(UserEntity userEntity, PostEntity postEntity){
         return VoteEntity.builder()
-                .voteId(voteDto.getVoteId())
                 .voteType(VoteType.NOVOTE)
                 .userEntity(userEntity)
                 .postEntity(postEntity)

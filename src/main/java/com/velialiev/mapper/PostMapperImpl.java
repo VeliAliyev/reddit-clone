@@ -58,7 +58,7 @@ public class PostMapperImpl implements PostMapper{
                 .username(postEntity.getUserEntity().getUsername())
                 .voteCount(postEntity.getVoteCount())
                 .commentCount(postEntity.getCommentCount())
-                .duration(TimeAgo.using(postEntity.getCreatedDate().toEpochMilli()))
+                //.duration(TimeAgo.using(postEntity.getCreatedDate().toEpochMilli()))
                 .upVote(postEntity.isUpVote())
                 .downVote(postEntity.isDownVote())
                 .build();
