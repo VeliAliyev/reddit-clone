@@ -22,13 +22,13 @@ public class JWT {
     private Long jwtExpirationInMillis;
     private final JWTRepository JWTRepository;
 
-    public String generateToken(Authentication authentication){
+    public String generateAccessToken(Authentication authentication){
 
         User principal = (User) authentication.getPrincipal();
-        return generateTokenWithUserName(principal.getUsername());
+        return generateAccessTokenWithUserName(principal.getUsername());
     }
 
-    public String generateTokenWithUserName(String username){
+    public String generateAccessTokenWithUserName(String username){
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(Instant.now())
@@ -54,5 +54,6 @@ public class JWT {
     public void deleteRefreshToken(String token){
         JWTRepository.deleteByToken(token);
     }
+
     public Long getJwtExpirationInMillis(){return this.jwtExpirationInMillis;}
 }

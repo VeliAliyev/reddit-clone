@@ -97,7 +97,7 @@ public class AuthService {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword()));
         // You can look up this context for authentication object to check if the user is logged in or not.
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwt.generateToken(authentication);
+        String token = jwt.generateAccessToken(authentication);
         return AuthenticationResponseDto.builder()
                 .accessToken(token)
                 .refreshToken(jwt.generateRefreshToken().getToken())
@@ -108,7 +108,7 @@ public class AuthService {
 
     public AuthenticationResponseDto refreshToken(RefreshAccessTokenRequestDto refreshAccessTokenRequestDto) {
         jwt.validateRefreshToken(refreshAccessTokenRequestDto.getRefreshToken());
-        String accessToken = jwt.generateTokenWithUserName(refreshAccessTokenRequestDto.getUsername());
+        String accessToken = jwt.generateAccessTokenWithUserName(refreshAccessTokenRequestDto.getUsername());
         return AuthenticationResponseDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshAccessTokenRequestDto.getRefreshToken())
