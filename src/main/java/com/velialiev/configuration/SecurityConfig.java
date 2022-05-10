@@ -1,4 +1,4 @@
-package com.velialiev.security;
+package com.velialiev.configuration;
 
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
