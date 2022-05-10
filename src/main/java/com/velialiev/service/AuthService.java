@@ -18,11 +18,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -58,16 +58,16 @@ public class AuthService {
                 "http://localhost:8080/api/auth/accountVerification/" + token));
 
     }
-
+    @Transactional(readOnly = true)
     public UserEntity getCurrentUser(){
-         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userRepository.findByUsername(user.getUsername())
+         Jwt principal = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.findByUsername(principal.getSubject())
                 .orElseThrow(()->new SpringRedditException("No user with such username"));
     }
 
 
-
-    private String generateVerificationToken(UserEntity userEntity){
+    @Transactional
+    public String generateVerificationToken(UserEntity userEntity){
         String token = UUID.randomUUID().toString();
 
         VerificationTokenEntity verificationTokenEntity = VerificationTokenEntity.builder()
@@ -80,6 +80,7 @@ public class AuthService {
         return token;
     }
 
+    @Transactional
     public String verifyAccount(String token) {
 
         VerificationTokenEntity verificationTokenEntity = verificationTokenRepository.findByToken(token)
@@ -90,6 +91,7 @@ public class AuthService {
             return "Verification Token Expired";
 
         enableUser(verificationTokenEntity);
+        verificationTokenRepository.deleteById(verificationTokenEntity.getVerificationId());
         return "Activation Completed. You can now login with your username and password";
     }
 
