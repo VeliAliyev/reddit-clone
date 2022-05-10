@@ -1,6 +1,7 @@
 package com.velialiev.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.time.Instant;
 @Table(name = "token")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class VerificationTokenEntity {
 
     @Id

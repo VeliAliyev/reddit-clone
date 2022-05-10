@@ -42,7 +42,7 @@ public class AuthController {
 
     @PostMapping("refresh/token")
     public AuthenticationResponseDto refreshToken(@Valid @RequestBody RefreshAccessTokenRequestDto refreshAccessTokenRequestDto){
-        return authService.refreshToken(refreshAccessTokenRequestDto);
+        return authService.refreshAccessToken(refreshAccessTokenRequestDto);
     }
 
     @PostMapping("logout")

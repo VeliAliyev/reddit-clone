@@ -40,12 +40,14 @@ public class AuthService {
 
     @Transactional
     public void signup(RegisterRequestDto registerRequestDto){
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername(registerRequestDto.getUsername());
-        userEntity.setEmail(registerRequestDto.getEmail());
-        userEntity.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
-        userEntity.setCreatedDate(Instant.now());
-        userEntity.setEnabled(false);
+
+        UserEntity userEntity = UserEntity.builder()
+                .username(registerRequestDto.getUsername())
+                .email(registerRequestDto.getEmail())
+                .password(passwordEncoder.encode(registerRequestDto.getPassword()))
+                .createdDate(Instant.now())
+                .isEnabled(false)
+                .build();
 
         userRepository.save(userEntity);
 
@@ -68,9 +70,10 @@ public class AuthService {
     private String generateVerificationToken(UserEntity userEntity){
         String token = UUID.randomUUID().toString();
 
-        VerificationTokenEntity verificationTokenEntity = new VerificationTokenEntity();
-        verificationTokenEntity.setToken(token);
-        verificationTokenEntity.setUserEntity(userEntity);
+        VerificationTokenEntity verificationTokenEntity = VerificationTokenEntity.builder()
+                .token(token)
+                .userEntity(userEntity)
+                .build();
 
         verificationTokenRepository.save(verificationTokenEntity);
         return token;
@@ -81,11 +84,11 @@ public class AuthService {
         VerificationTokenEntity verificationTokenEntity = verificationTokenRepository.findByToken(token)
                 .orElseThrow(()-> new SpringRedditException("Invalid Token"));
 
-        fetchUserAndEnable(verificationTokenEntity);
+        enableUser(verificationTokenEntity);
     }
 
     @Transactional
-    public void fetchUserAndEnable(VerificationTokenEntity verificationTokenEntity){
+    public void enableUser(VerificationTokenEntity verificationTokenEntity){
         UserEntity userEntity = userRepository.findByUsername(verificationTokenEntity.getUserEntity().getUsername())
                 .orElseThrow(()-> new SpringRedditException("User "+ verificationTokenEntity.getUserEntity().getUsername() + " not found"));
 
@@ -97,27 +100,34 @@ public class AuthService {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword()));
         // You can look up this context for authentication object to check if the user is logged in or not.
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwt.generateAccessToken(authentication);
-        return AuthenticationResponseDto.builder()
-                .accessToken(token)
-                .refreshToken(jwt.generateRefreshToken().getToken())
-                .expiresAt(Instant.now().plusMillis(jwt.getJwtExpirationInMillis()))
-                .username(loginRequestDto.getUsername())
-                .build();
+
+        String accessToken = jwt.generateAccessToken(authentication);
+        String refreshToken = jwt.generateRefreshToken().getToken();
+        String username = loginRequestDto.getUsername();
+
+        return buildAuthenticationResponse(accessToken, refreshToken, username);
     }
 
-    public AuthenticationResponseDto refreshToken(RefreshAccessTokenRequestDto refreshAccessTokenRequestDto) {
+    public AuthenticationResponseDto refreshAccessToken(RefreshAccessTokenRequestDto refreshAccessTokenRequestDto) {
         jwt.validateRefreshToken(refreshAccessTokenRequestDto.getRefreshToken());
+
         String accessToken = jwt.generateAccessTokenWithUserName(refreshAccessTokenRequestDto.getUsername());
-        return AuthenticationResponseDto.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshAccessTokenRequestDto.getRefreshToken())
-                .expiresAt(Instant.now().plusMillis(jwt.getJwtExpirationInMillis()))
-                .username(refreshAccessTokenRequestDto.getUsername())
-                .build();
+        String refreshToken = refreshAccessTokenRequestDto.getRefreshToken();
+        String username = refreshAccessTokenRequestDto.getUsername();
+
+        return buildAuthenticationResponse(accessToken, refreshToken, username);
     }
 
     public void logout(String refreshToken) {
         jwt.deleteRefreshToken(refreshToken);
+    }
+
+    public AuthenticationResponseDto buildAuthenticationResponse(String accessToken, String refreshToken, String username){
+        return AuthenticationResponseDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .expiresAt(Instant.now().plusMillis(jwt.getJwtExpirationInMillis()))
+                .username(username)
+                .build();
     }
 }
