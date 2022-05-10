@@ -73,18 +73,24 @@ public class AuthService {
         VerificationTokenEntity verificationTokenEntity = VerificationTokenEntity.builder()
                 .token(token)
                 .userEntity(userEntity)
+                .expiryDate(Instant.now().plusSeconds(600))
                 .build();
 
         verificationTokenRepository.save(verificationTokenEntity);
         return token;
     }
 
-    public void verifyAccount(String token) {
+    public String verifyAccount(String token) {
 
         VerificationTokenEntity verificationTokenEntity = verificationTokenRepository.findByToken(token)
                 .orElseThrow(()-> new SpringRedditException("Invalid Token"));
 
+        Instant expirationDate = verificationTokenEntity.getExpiryDate();
+        if (expirationDate.compareTo(Instant.now()) < 0)
+            return "Verification Token Expired";
+
         enableUser(verificationTokenEntity);
+        return "Activation Completed. You can now login with your username and password";
     }
 
     @Transactional
