@@ -1,15 +1,16 @@
 package com.velialiev.service;
 
-import com.velialiev.dto.AuthenticationResponse;
-import com.velialiev.dto.LoginRequest;
-import com.velialiev.dto.RegisterRequest;
+import com.velialiev.dto.AuthenticationResponseDto;
+import com.velialiev.dto.LoginRequestDto;
+import com.velialiev.dto.RefreshAccessTokenRequestDto;
+import com.velialiev.dto.RegisterRequestDto;
 import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.model.NotificationEmail;
 import com.velialiev.model.UserEntity;
 import com.velialiev.model.VerificationTokenEntity;
 import com.velialiev.repository.UserRepository;
 import com.velialiev.repository.VerificationTokenRepository;
-import com.velialiev.security.JwtProvider;
+import com.velialiev.security.JWT;
 import lombok.AllArgsConstructor;
 
 
@@ -34,14 +35,15 @@ public class AuthService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
     private final AuthenticationManager authenticationManager;
-    private final JwtProvider jwtProvider;
+    private final JWT jwt;
+
 
     @Transactional
-    public void signup(RegisterRequest registerRequest){
+    public void signup(RegisterRequestDto registerRequestDto){
         UserEntity userEntity = new UserEntity();
-        userEntity.setUsername(registerRequest.getUsername());
-        userEntity.setEmail(registerRequest.getEmail());
-        userEntity.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        userEntity.setUsername(registerRequestDto.getUsername());
+        userEntity.setEmail(registerRequestDto.getEmail());
+        userEntity.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
         userEntity.setCreatedDate(Instant.now());
         userEntity.setEnabled(false);
 
@@ -57,9 +59,8 @@ public class AuthService {
 
     public UserEntity getCurrentUser(){
          User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-         UserEntity userEntity = userRepository.findByUsername(user.getUsername())
-                 .orElseThrow(()->new SpringRedditException("No user with such username"));
-         return userEntity;
+        return userRepository.findByUsername(user.getUsername())
+                .orElseThrow(()->new SpringRedditException("No user with such username"));
     }
 
 
@@ -92,12 +93,31 @@ public class AuthService {
         userRepository.save(userEntity);
     }
 
-    public AuthenticationResponse login(LoginRequest loginRequest){
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+    public AuthenticationResponseDto login(LoginRequestDto loginRequestDto){
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword()));
         // You can look up this context for authentication object to check if the user is logged in or not.
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtProvider.generateToken(authentication);
-        return new AuthenticationResponse(token, loginRequest.getUsername());
+        String token = jwt.generateToken(authentication);
+        return AuthenticationResponseDto.builder()
+                .accessToken(token)
+                .refreshToken(jwt.generateRefreshToken().getToken())
+                .expiresAt(Instant.now().plusMillis(jwt.getJwtExpirationInMillis()))
+                .username(loginRequestDto.getUsername())
+                .build();
     }
 
+    public AuthenticationResponseDto refreshToken(RefreshAccessTokenRequestDto refreshAccessTokenRequestDto) {
+        jwt.validateRefreshToken(refreshAccessTokenRequestDto.getRefreshToken());
+        String accessToken = jwt.generateTokenWithUserName(refreshAccessTokenRequestDto.getUsername());
+        return AuthenticationResponseDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshAccessTokenRequestDto.getRefreshToken())
+                .expiresAt(Instant.now().plusMillis(jwt.getJwtExpirationInMillis()))
+                .username(refreshAccessTokenRequestDto.getUsername())
+                .build();
+    }
+
+    public void logout(String refreshToken) {
+        jwt.deleteRefreshToken(refreshToken);
+    }
 }

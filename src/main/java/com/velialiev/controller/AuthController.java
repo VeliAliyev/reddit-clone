@@ -1,8 +1,9 @@
 package com.velialiev.controller;
 
-import com.velialiev.dto.AuthenticationResponse;
-import com.velialiev.dto.LoginRequest;
-import com.velialiev.dto.RegisterRequest;
+import com.velialiev.dto.AuthenticationResponseDto;
+import com.velialiev.dto.LoginRequestDto;
+import com.velialiev.dto.RefreshAccessTokenRequestDto;
+import com.velialiev.dto.RegisterRequestDto;
 
 
 import com.velialiev.service.AuthService;
@@ -10,6 +11,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 
 @RestController
@@ -21,8 +24,8 @@ public class AuthController {
 
 
     @PostMapping("signup")
-    public ResponseEntity<String> signup(@RequestBody RegisterRequest registerRequest){
-        authService.signup(registerRequest);
+    public ResponseEntity<String> signup(@RequestBody RegisterRequestDto registerRequestDto){
+        authService.signup(registerRequestDto);
         return new ResponseEntity<>("Registration successful!", HttpStatus.OK);
     }
 
@@ -33,7 +36,19 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest){
-        return authService.login(loginRequest);
+    public AuthenticationResponseDto login(@RequestBody LoginRequestDto loginRequestDto){
+        return authService.login(loginRequestDto);
     }
+
+    @PostMapping("refresh/token")
+    public AuthenticationResponseDto refreshToken(@Valid @RequestBody RefreshAccessTokenRequestDto refreshAccessTokenRequestDto){
+        return authService.refreshToken(refreshAccessTokenRequestDto);
+    }
+
+    @PostMapping("logout")
+    public ResponseEntity<String> logout(@Valid @RequestBody RefreshAccessTokenRequestDto refreshAccessTokenRequestDto){
+        authService.logout(refreshAccessTokenRequestDto.getRefreshToken());
+        return ResponseEntity.status(HttpStatus.OK).body("Logged Out Successfully");
+    }
+
 }
