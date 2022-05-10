@@ -1,4 +1,4 @@
-package com.velialiev.config;
+package com.velialiev.security;
 
 import com.velialiev.exceptions.SpringRedditException;
 import com.velialiev.model.RefreshTokenEntity;

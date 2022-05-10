@@ -10,7 +10,7 @@ import com.velialiev.model.UserEntity;
 import com.velialiev.model.VerificationTokenEntity;
 import com.velialiev.repository.UserRepository;
 import com.velialiev.repository.VerificationTokenRepository;
-import com.velialiev.config.JWT;
+import com.velialiev.security.JWT;
 import lombok.AllArgsConstructor;
 
 
