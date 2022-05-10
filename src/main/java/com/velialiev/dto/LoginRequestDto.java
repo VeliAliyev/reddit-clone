@@ -1,6 +1,5 @@
 package com.velialiev.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class LoginRequestDto {
 
-    private String email;
     private String username;
     private String password;
+
 }
