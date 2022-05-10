@@ -20,13 +20,13 @@ public class PostController {
     @PostMapping
     public ResponseEntity createPost(@RequestBody PostRequestDto postRequestDto){
         postService.createPost(postRequestDto);
-        return  new ResponseEntity(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<PostResponseDto> getPost(@PathVariable(name = "id") Long id){
+    public ResponseEntity getPost(@PathVariable(name = "id") Long id){
         PostResponseDto postResponseDto = postService.getPost(id);
-        return new ResponseEntity(postResponseDto, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(postResponseDto);
     }
 
     @GetMapping
