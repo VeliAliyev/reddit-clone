@@ -1,2 +1,2 @@
 # reddit-clone
-I made this project using spring boot.
+This is a reddit-clone project made with spring boot. I made this project for learning purposes.
